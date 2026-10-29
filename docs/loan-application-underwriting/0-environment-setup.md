@@ -2,16 +2,24 @@
 
 このあとのレッスンで使う土台を用意します。**所要 20 分程度です。**
 
-作成するものは 3 つです。
+!!! warning "先に、管理者による事前設定が済んでいるか確認してください"
+    第2部では**フォルダーやストレージバケットの作成**と**ソリューションのデプロイ**を行います。
+    これらは第1部で使った開発者向け権限には含まれていないため、**テナント管理者による事前設定が必要です。**
 
-| 種類 | 名前 | 用途 |
-|---|---|---|
-| Orchestrator フォルダー | `{{ practice_folder }}` | デプロイしたものをすべてここに配置します |
-| ストレージバケット | `{{ storage_bucket }}` | レッスン4 で `results.csv` をアップロードします |
-| **ソリューション** | `LoanApplicationUnderwriting` | **レッスン1・3・4 で作るプロジェクトを束ねる単位** |
+    まだの場合は、[管理者向け：テナントの事前設定](../admin-setup.md)を管理者の方へお渡しください。
+    設定が済むと、演習用フォルダー **`{{ practice_folder }}`** が用意され、あなたに必要なロールが割り当てられます。
 
-!!! note "名前は変えても構いません"
-    別の名前にする場合は、**以降のすべてのレッスンで読み替えてください。** 本文中の `{{ practice_folder }}` と `{{ storage_bucket }}` がそれにあたります。
+ここで扱うものは 3 つです。
+
+| 種類 | 名前 | 用意する人 | 用途 |
+|---|---|---|---|
+| Orchestrator フォルダー | `{{ practice_folder }}` | **管理者**（事前設定） | デプロイしたものをすべてここに配置します |
+| ストレージバケット | `{{ storage_bucket }}` | あなた | レッスン4 で `results.csv` をアップロードします |
+| **ソリューション** | `LoanApplicationUnderwriting` | あなた | **レッスン1・3・4 で作るプロジェクトを束ねる単位** |
+
+!!! note "名前が違っていても構いません"
+    フォルダー名は管理者が決めます。バケット名はあなたが決められます。本文と違う名前になる場合は、
+    **以降のすべてのレッスンで読み替えてください。** 本文中の `{{ practice_folder }}` と `{{ storage_bucket }}` がそれにあたります。
 
 ---
 
@@ -39,28 +47,36 @@ Automation Cloud の画面右上、または URL（`https://cloud.uipath.com/<�
 
 ---
 
-## 2. フォルダーを作成する
+## 2. フォルダーを確認する
+
+演習用フォルダーは**管理者が事前に作成しています。** 見えていることと、`Key` を確認します。
 
 ```bash
-uip or folders create "{{ practice_folder }}" --output json
+uip or folders list --all --name "{{ practice_folder }}" --output json
 ```
-
-!!! note "名前は位置引数です"
-    `--name` というオプションはありません。フォルダー名はコマンドの最後に、そのまま書きます。
 
 次のような結果が返ります。`Key` の値は後で使うので控えておいてください。
 
 ```json
 {
   "Result": "Success",
-  "Code": "FolderCreated",
-  "Data": {
-    "Key": "b956f165-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-    "Id": 1248846,
-    "Name": "{{ practice_folder }}"
-  }
+  "Code": "FolderList",
+  "Data": [
+    {
+      "Key": "b956f165-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "Name": "{{ practice_folder }}",
+      "Path": "{{ practice_folder }}"
+    }
+  ]
 }
 ```
+
+!!! warning "見つからない場合"
+    管理者による事前設定がまだ済んでいません。[管理者向け：テナントの事前設定](../admin-setup.md)を
+    管理者の方へお渡しください。**フォルダーの作成には、開発者向け権限では足りません。**
+
+    別の名前で用意された場合は、**以降のすべての手順で `{{ practice_folder }}` をその名前に
+    読み替えてください。**
 
 !!! tip "フォルダーキーを控えておく理由"
     多くのコマンドは `--folder-path "{{ practice_folder }}"` と**名前で**指定できますが、**一部のコマンドはキー（GUID）しか受け付けません。** 特にレッスン2 の `uip codedapp deploy` がそうです。
@@ -132,7 +148,7 @@ cd LoanApplicationUnderwriting
 
 ## 5. 確認する
 
-両方が作成されたことを確認します。
+フォルダーとバケットの両方が見えることを確認します。
 
 ```bash
 uip or folders list --all --name "{{ practice_folder }}" --output table

@@ -83,13 +83,17 @@ uip or buckets delete <バケットキー> --output json
 
 **Orchestrator** → **テナント** → **パッケージ** から該当のものを削除してください。
 
-## 6. フォルダーを削除する
+## 6. フォルダーを削除する（管理者のみ）
+
+!!! note "これは管理者の作業です"
+    演習用フォルダーは管理者が作成したものです。**フォルダーの削除には開発者向け権限では足りません。**
+    次回も演習する場合は、残しておいて構いません。中のリソースを 1〜5 で片付けてあれば、再演習できます。
 
 中のリソースをすべて削除したあとに実行します。
 
 ```bash
 uip or folders list --all --name "{{ practice_folder }}" --output json
-uip or folders delete <フォルダーキー> --output json
+uip or folders delete <フォルダーキー> --yes --output json
 ```
 
 ## 6b. ソリューションのデプロイを削除する（一括デプロイを試した場合）

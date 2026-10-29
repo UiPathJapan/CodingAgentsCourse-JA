@@ -65,9 +65,10 @@ markdown_extensions:
 
 nav:
   - ホーム: index.md
+  - 管理者向け：テナントの事前設定: admin-setup.md
   - 第1部 コーディングエージェント入門:
     - 概要: getting-started/index.md
-    - 0. 前提ソフトウェアを準備する: getting-started/0-prerequisites.md
+    - 0. 前提を準備する: getting-started/0-prerequisites.md
     - 1. CLI とスキルをインストールする: getting-started/1-install-the-cli-and-skills.md
     - 2. CLI を使ってみる: getting-started/2-practice-the-cli.md
     - 3. 初めてのエージェントを作る: getting-started/3-build-your-first-agent.md

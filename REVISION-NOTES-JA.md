@@ -107,6 +107,43 @@ ILT 版は別途、日本語コースとして準備中とのことなので、�
 | **`install-skills.md` を削除** | 第2部の手順は第1部と内部不整合で、かつ冗長。`uip skills install` だけで完結することを実機で確認 |
 | **ソリューション中心の構成に変更** | 原典は各レッスンが独立したフォルダーを作り個別に公開する。UiPath では関連プロジェクトを 1 つのソリューションに束ねるのが標準 |
 | **`agenda.md` を「学習の進め方」に書き換え** | ILT の時間割（休憩・昼食）を自習向けの目安に。レッスンの依存関係図を追加 |
+| **「管理者向け：テナントの事前設定」を新設** | 下記のとおり、第2部には**開発者向け権限では実行できない操作**が含まれる。受講者がそのまま管理者へ渡せる独立ページにした |
+
+---
+
+## 権限（ロール）の前提
+
+社内レビューでの指摘を受けて調査しました。**`Automation Developer` だけでは第2部が完走できません。**
+
+実テナントのロール定義（`uip or roles get`）と、公式の
+[Permissions per endpoint](https://docs.uipath.com/orchestrator/automation-cloud/latest/api-guide/permissions-per-endpoint)
+を突き合わせた結果です。
+
+| コースの操作 | 必要な権限 | Automation Developer |
+|---|---|---|
+| フォルダーの作成・削除 | `Folders`／`Subfolders` – 作成・削除 | ❌（`SubFolders.View` のみ） |
+| ストレージバケットの作成・削除 | `Buckets` – 作成・削除 | ❌（`Buckets.View` のみ） |
+| `uip solution deploy run` / `uninstall` | `SolutionDeployments` – 作成・削除 | ❌（1 つも無し） |
+| `uip codedapp publish` | `AppVersions` – 作成 | ❌（`AppVersions.View` のみ） |
+
+逆に `Processes` `Jobs` `Queues` `Assets` `BlobFiles` `Tasks` `Apps` `FolderPackages` は
+すべて作成権限を持つため、**第1部と、第2部の開発作業そのものは Automation Developer で動きます。**
+
+### 対応
+
+- **演習用フォルダーは管理者が作成する**ことにし、レッスン0 の手順を「作成」から「確認」へ変更しました。
+  受講者にサブフォルダーを作らせる案も検討しましたが、`--folder-path` が**完全修飾パスを要求する**ため
+  本文 24 箇所の書き換えが必要になり、採りませんでした（実機で確認済み）
+- 受講者に必要なロールは、管理者向けページに表でまとめています
+- `AppVersions.Create` を持つ既定ロールは **`Orchestrator Administrator` のみ**（テナント内 12 ロールを全数確認）。
+  受講者をテナント管理者にしないため、**この 1 権限だけのカスタムロールを作る**手順にしました
+
+!!! note
+    `uip codedapp publish` は「パッケージのフィード公開」と「Apps サービスへの登録」の 2 段階で動きます
+    （実機のログで確認）。前者は `Packages.Create` で足りますが、後者が `AppVersions.Create` を
+    要求するかどうかは**ドキュメントに記載がなく、未確証です。** 権限を絞った ID での実地検証を
+    試みましたが、`uip or users import` が External Application に対して HTTP 500 を返すため
+    完了できませんでした。カスタムロールを入れておけばどちらに転んでも通るため、安全側に倒しています。
 
 ---
 
